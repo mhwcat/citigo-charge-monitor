@@ -17,18 +17,19 @@ async fn get_charge_sessions(
     services::auth::validate_auth(redis_pool.get_ref(), request.headers().get("Authorization"))
         .await?;
 
-    let charge_sessions = services::charge_session::get_charge_sessions_for_vehicle(
+    let charge_sessions = services::charge_session::get_finished_charge_sessions_for_vehicle(
         db_pool.get_ref(),
         &query.vehicle_id,
         query.index,
         query.page_size,
     )
     .await?;
-    let charge_sessions_count = services::charge_session::get_charge_sessions_for_vehicle_count(
-        db_pool.get_ref(),
-        &query.vehicle_id,
-    )
-    .await?;
+    let charge_sessions_count =
+        services::charge_session::get_finished_charge_sessions_for_vehicle_count(
+            db_pool.get_ref(),
+            &query.vehicle_id,
+        )
+        .await?;
 
     Ok(HttpResponse::Ok()
         .append_header(("X-Count", charge_sessions_count))

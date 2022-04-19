@@ -126,6 +126,31 @@
     },
     "query": "SELECT * FROM charge_sessions WHERE vehicle_id = ? AND stop_time IS NULL ORDER BY start_time DESC LIMIT 1"
   },
+  "38cee6277ed17ee660c46c4a097559e0664e993240fc324e30e7edb3534b9bf1": {
+    "describe": {
+      "columns": [
+        {
+          "name": "cnt",
+          "ordinal": 0,
+          "type_info": {
+            "char_set": 63,
+            "flags": {
+              "bits": 129
+            },
+            "max_size": 21,
+            "type": "LongLong"
+          }
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Right": 1
+      }
+    },
+    "query": "SELECT COUNT(*) AS cnt FROM charge_sessions WHERE vehicle_id = ? AND stop_time IS NOT NULL"
+  },
   "3b4a55a7aa5a46439174193143f724299b9881b5f27987a61c59061aaa08ec74": {
     "describe": {
       "columns": [
@@ -280,31 +305,6 @@
     },
     "query": "SELECT * FROM vehicles"
   },
-  "6bc25595b1e80994afff087192470ca4cc6b85f124f9377f84ab4ac1f965a298": {
-    "describe": {
-      "columns": [
-        {
-          "name": "cnt",
-          "ordinal": 0,
-          "type_info": {
-            "char_set": 63,
-            "flags": {
-              "bits": 129
-            },
-            "max_size": 21,
-            "type": "LongLong"
-          }
-        }
-      ],
-      "nullable": [
-        false
-      ],
-      "parameters": {
-        "Right": 1
-      }
-    },
-    "query": "SELECT COUNT(*) AS cnt FROM charge_sessions WHERE vehicle_id = ?"
-  },
   "91030ba96f0a030449afcd28fb4014e47267c5a435d6d64d9b3d8e15fd60c895": {
     "describe": {
       "columns": [],
@@ -455,6 +455,122 @@
       }
     },
     "query": "SELECT * FROM vehicles WHERE vin = ?"
+  },
+  "a71bde0e8657d9f64e70aba60338c2d25b9596fce3a38e0d1da84bc631d09ae9": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": {
+            "char_set": 224,
+            "flags": {
+              "bits": 4099
+            },
+            "max_size": 144,
+            "type": "VarString"
+          }
+        },
+        {
+          "name": "start_time",
+          "ordinal": 1,
+          "type_info": {
+            "char_set": 63,
+            "flags": {
+              "bits": 4233
+            },
+            "max_size": 23,
+            "type": "Datetime"
+          }
+        },
+        {
+          "name": "stop_time",
+          "ordinal": 2,
+          "type_info": {
+            "char_set": 63,
+            "flags": {
+              "bits": 136
+            },
+            "max_size": 23,
+            "type": "Datetime"
+          }
+        },
+        {
+          "name": "start_soc",
+          "ordinal": 3,
+          "type_info": {
+            "char_set": 63,
+            "flags": {
+              "bits": 4097
+            },
+            "max_size": 4,
+            "type": "Tiny"
+          }
+        },
+        {
+          "name": "current_soc",
+          "ordinal": 4,
+          "type_info": {
+            "char_set": 63,
+            "flags": {
+              "bits": 0
+            },
+            "max_size": 4,
+            "type": "Tiny"
+          }
+        },
+        {
+          "name": "stop_soc",
+          "ordinal": 5,
+          "type_info": {
+            "char_set": 63,
+            "flags": {
+              "bits": 0
+            },
+            "max_size": 4,
+            "type": "Tiny"
+          }
+        },
+        {
+          "name": "vehicle_id",
+          "ordinal": 6,
+          "type_info": {
+            "char_set": 224,
+            "flags": {
+              "bits": 4105
+            },
+            "max_size": 144,
+            "type": "VarString"
+          }
+        },
+        {
+          "name": "last_update_time",
+          "ordinal": 7,
+          "type_info": {
+            "char_set": 63,
+            "flags": {
+              "bits": 128
+            },
+            "max_size": 23,
+            "type": "Datetime"
+          }
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        true,
+        true,
+        false,
+        true
+      ],
+      "parameters": {
+        "Right": 3
+      }
+    },
+    "query": "SELECT * FROM charge_sessions WHERE vehicle_id = ? AND stop_time IS NOT NULL ORDER BY start_time DESC LIMIT ?, ?"
   },
   "a8a0b8a87701402985feccaf1537a6b63a79b7fd309fcf45627451139e6829f4": {
     "describe": {
@@ -658,122 +774,6 @@
       }
     },
     "query": "UPDATE vehicles SET soc = ?, last_update_time = NOW() WHERE id = ?"
-  },
-  "c4e90ce77a750227e211c154a65ea996fd40fb62563e33dbfe33b350f234d367": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": {
-            "char_set": 224,
-            "flags": {
-              "bits": 4099
-            },
-            "max_size": 144,
-            "type": "VarString"
-          }
-        },
-        {
-          "name": "start_time",
-          "ordinal": 1,
-          "type_info": {
-            "char_set": 63,
-            "flags": {
-              "bits": 4233
-            },
-            "max_size": 23,
-            "type": "Datetime"
-          }
-        },
-        {
-          "name": "stop_time",
-          "ordinal": 2,
-          "type_info": {
-            "char_set": 63,
-            "flags": {
-              "bits": 136
-            },
-            "max_size": 23,
-            "type": "Datetime"
-          }
-        },
-        {
-          "name": "start_soc",
-          "ordinal": 3,
-          "type_info": {
-            "char_set": 63,
-            "flags": {
-              "bits": 4097
-            },
-            "max_size": 4,
-            "type": "Tiny"
-          }
-        },
-        {
-          "name": "current_soc",
-          "ordinal": 4,
-          "type_info": {
-            "char_set": 63,
-            "flags": {
-              "bits": 0
-            },
-            "max_size": 4,
-            "type": "Tiny"
-          }
-        },
-        {
-          "name": "stop_soc",
-          "ordinal": 5,
-          "type_info": {
-            "char_set": 63,
-            "flags": {
-              "bits": 0
-            },
-            "max_size": 4,
-            "type": "Tiny"
-          }
-        },
-        {
-          "name": "vehicle_id",
-          "ordinal": 6,
-          "type_info": {
-            "char_set": 224,
-            "flags": {
-              "bits": 4105
-            },
-            "max_size": 144,
-            "type": "VarString"
-          }
-        },
-        {
-          "name": "last_update_time",
-          "ordinal": 7,
-          "type_info": {
-            "char_set": 63,
-            "flags": {
-              "bits": 128
-            },
-            "max_size": 23,
-            "type": "Datetime"
-          }
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        true,
-        false,
-        true,
-        true,
-        false,
-        true
-      ],
-      "parameters": {
-        "Right": 3
-      }
-    },
-    "query": "SELECT * FROM charge_sessions WHERE vehicle_id = ? ORDER BY start_time DESC LIMIT ?, ?"
   },
   "cc320954267edcc8b6a15766ed55bad343f8d456ac92248968a44894153250d6": {
     "describe": {

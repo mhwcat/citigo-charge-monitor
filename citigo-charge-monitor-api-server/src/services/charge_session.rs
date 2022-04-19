@@ -19,7 +19,7 @@ pub async fn get_charge_session_by_id(
     Ok(result)
 }
 
-pub async fn get_charge_sessions_for_vehicle(
+pub async fn get_finished_charge_sessions_for_vehicle(
     connection: &MySqlPool,
     vehicle_id: &str,
     index: u32,
@@ -27,7 +27,7 @@ pub async fn get_charge_sessions_for_vehicle(
 ) -> ApiResult<Vec<ChargeSession>> {
     let result = sqlx::query_as!(
         ChargeSession,
-        r#"SELECT * FROM charge_sessions WHERE vehicle_id = ? ORDER BY start_time DESC LIMIT ?, ?"#,
+        r#"SELECT * FROM charge_sessions WHERE vehicle_id = ? AND stop_time IS NOT NULL ORDER BY start_time DESC LIMIT ?, ?"#,
         vehicle_id,
         index,
         page_size
@@ -38,12 +38,12 @@ pub async fn get_charge_sessions_for_vehicle(
     Ok(result)
 }
 
-pub async fn get_charge_sessions_for_vehicle_count(
+pub async fn get_finished_charge_sessions_for_vehicle_count(
     connection: &MySqlPool,
     vehicle_id: &str,
 ) -> ApiResult<i64> {
     let result = sqlx::query!(
-        r#"SELECT COUNT(*) AS cnt FROM charge_sessions WHERE vehicle_id = ?"#,
+        r#"SELECT COUNT(*) AS cnt FROM charge_sessions WHERE vehicle_id = ? AND stop_time IS NOT NULL"#,
         vehicle_id
     )
     .fetch_one(connection)
