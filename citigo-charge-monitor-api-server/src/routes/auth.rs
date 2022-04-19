@@ -42,11 +42,11 @@ pub async fn logout(
     request: HttpRequest,
     redis_pool: web::Data<RedisPool>,
 ) -> Result<HttpResponse, ApiError> {
-    let session_id = request.headers().get("Authorization");
+    let token = request.headers().get("Authorization");
 
-    if let Some(session_id) = session_id {
-        let session_id = services::auth::extract_token_value_from_header(session_id)?;
-        let _ = services::user::logout_user(redis_pool.get_ref(), &session_id).await?;
+    if let Some(token) = token {
+        let token = services::auth::extract_token_value_from_header(token)?;
+        let _ = services::user::logout_user(redis_pool.get_ref(), &token).await?;
 
         Ok(HttpResponse::Ok().finish())
     } else {

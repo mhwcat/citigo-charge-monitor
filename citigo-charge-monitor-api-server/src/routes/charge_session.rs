@@ -45,7 +45,7 @@ async fn create_or_update_charge_session(
     services::auth::validate_auth(redis_pool.get_ref(), request.headers().get("Authorization"))
         .await?;
 
-    let vehicle = services::charge_session::create_or_update_charge_session(
+    let charge_session = services::charge_session::create_or_update_charge_session(
         db_pool.get_ref(),
         body.soc,
         &body.vehicle_id,
@@ -53,5 +53,5 @@ async fn create_or_update_charge_session(
     )
     .await?;
 
-    Ok(HttpResponse::Ok().json(vehicle))
+    Ok(HttpResponse::Ok().json(charge_session))
 }
