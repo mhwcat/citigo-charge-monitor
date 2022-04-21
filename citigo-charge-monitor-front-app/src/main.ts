@@ -18,14 +18,21 @@ library.add(faUser, faLock, faCar, faRightFromBracket, faArrowLeft, faArrowRight
 const routes = [
   { path: "/login", component: LoginView },
   { path: "/", component: MainView },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
-})
+});
 
-const app = createApp(App);
+// Discard more than one toast of the same type for readability
+const filterBeforeCreate = (toast: { type: any; }, toasts: { filter: (arg0: (t: any) => boolean) => { (): any; new(): any; length: number; }; }) => {
+  if (toasts.filter((t: { type: any; }) => t.type === toast.type).length !== 0) {
+    return false;
+  }
+
+  return toast;
+};
 
 export function formatDt(datetime: string | null) {
   if (datetime) {
@@ -35,9 +42,11 @@ export function formatDt(datetime: string | null) {
   }
 }
 
+const app = createApp(App);
+
 app
   .use(router)
   .use(store, key)
-  .use(Toast, { maxToasts: 1 })
+  .use(Toast, { maxToasts: 1, filterBeforeCreate })
   .component("font-awesome-icon", FontAwesomeIcon)
   .mount("#app");
