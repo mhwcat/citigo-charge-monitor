@@ -71,17 +71,12 @@ export default defineComponent({
             this.toast.success("Logged in as " + this.username, {
               timeout: 2000
             });
-            
-            this.router.push("/");
           })
           .finally(() => {
             this.loggingIn = false;
           });
       }
     },
-  },
-  mounted() {
-    //
-  },
+  }
 });
 </script>

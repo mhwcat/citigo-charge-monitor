@@ -67,7 +67,7 @@ export default defineComponent({
   },
   methods: {
     fetchChargeSessions() {
-      if (this.store.getters.vehicleId) {
+      if (this.store.getters.vehicleId && this.store.getters.userSessionId) {
         ApiService.getChargeSessions(this.store.getters.vehicleId, this.index, this.pageSize)
           .then((response: AxiosResponse) => {
             this.chargeSessions = response.data;

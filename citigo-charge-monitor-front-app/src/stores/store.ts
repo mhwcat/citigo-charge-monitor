@@ -46,7 +46,9 @@ export const store = createStore<State>({
 })
 
 store.subscribe((mutation, state) => {
-  localStorage.setItem("store", JSON.stringify(state));
+  if (mutation.type != "initialiseStore") {
+    localStorage.setItem("store", JSON.stringify(state));
+  }
 });
 
 // define your own `useStore` composition function

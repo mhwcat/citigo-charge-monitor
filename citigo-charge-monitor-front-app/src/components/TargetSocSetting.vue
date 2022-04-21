@@ -31,7 +31,7 @@ export default defineComponent({
   },
   methods: {
     targetSocChanged() {
-      if (this.store.getters.vehicleId) {
+      if (this.store.getters.vehicleId && this.store.getters.userSessionId) {
         ApiService.updateTargetSoc(this.store.getters.vehicleId, vsStore.vehicleStatus.vehicle.targetSoc)
           .then((response: any) => {
             this.toast.success("Target SOC updated", {

@@ -54,7 +54,6 @@ import ApiService from "@/services/ApiService";
 import vsStore from "@/stores/vehicle-status";
 import { useToast } from "vue-toastification";
 import { useStore } from "@/stores/store";
-import apiClient from "@/http-common";
 import { useRouter } from "vue-router";
 import Vehicle from "@/models/Vehicle";
 
@@ -85,7 +84,7 @@ export default defineComponent({
         });
     },
     fetchVehicleStatus() {
-      if (this.store.getters.vehicleId) {
+      if (this.store.getters.vehicleId && this.store.getters.userSessionId) {
         ApiService.getVehicleStatus(this.store.getters.vehicleId)
           .then((response: any) => {
             vsStore.vehicleStatus = response.data;
@@ -105,43 +104,6 @@ export default defineComponent({
           this.store.commit("saveUserSession", null);
         });
     },
-  },
-  beforeCreate() {
-    apiClient.interceptors.response.use((response) => response, (error) => {
-      if (error.response.status == 401) {
-        this.store.commit("saveUserSession", null);
-        this.toast.error("Authorization error", { timeout: 3000 });
-      } else {
-        this.toast.error("Failed: " + error, { timeout: 3000 });
-      }
-
-      throw error;
-    }); 
-
-    this.store.subscribe((mutation, state) => {
-      if (mutation.type === "initialiseStore" || mutation.type === "saveUserSession") {
-        if (!state.userSession) {
-          this.router.push("/login");     
-        }
-      }
-    });
-
-    this.store.commit("initialiseStore");     
-  },
-  created() {
-    apiClient.interceptors.request.use((config) => {
-      const token = this.store.getters.userSessionId;
-
-      if (token) {
-        if (!config.headers) {
-          config.headers = {};
-        }
-          
-        config.headers.Authorization =  "Bearer " + token;
-      }
-    
-      return config;
-    }, error => error); 
   },
   mounted() {
     this.fetchVehicles();
