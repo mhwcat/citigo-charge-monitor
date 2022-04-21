@@ -18,13 +18,13 @@
         </tbody>
       </table>
       <nav class="pagination is-justify-content-flex-end" role="navigation" aria-label="pagination">
-        <span class="pagination-ellipsis">{{ index + 1 }}-{{ (index + pageSize) > (maxPage * pageSize) ? (maxPage * pageSize) + 1 : (index + pageSize) }} / {{ (maxPage * pageSize) + 1 }}</span>
-        <button class="pagination-previous" :disabled="currentPage <= 0" @click="handlePaginationPrevious">
+        <span class="pagination-ellipsis"> {{ indexFrom }}-{{ indexTo }} / {{ totalCount }}</span>
+        <button class="pagination-previous" :disabled="index <= 0" @click="handlePaginationPrevious">
           <span class="icon">
             <font-awesome-icon :icon="['fas', 'arrow-left']" />
           </span> 
         </button>
-        <button class="pagination-next" :disabled="currentPage >= maxPage" @click="handlePaginationNext">          
+        <button class="pagination-next" :disabled="index >= maxIndex" @click="handlePaginationNext">          
           <span class="icon">
             <font-awesome-icon :icon="['fas', 'arrow-right']" />
           </span> 
@@ -44,6 +44,8 @@ import { useStore } from "@/stores/store";
 import { AxiosResponse } from "axios";
 import { formatDt } from "@/main";
 
+const PAGE_SIZE = 5;
+
 export default defineComponent({
   name: "charge-sessions-list",
   setup() {
@@ -54,43 +56,62 @@ export default defineComponent({
   },  
   data() {
     return {
-      currentPage: 0,
-      pageSize: 5,
-      maxPage: 0,
+      index: 0,
+      totalCount: 0,
       chargeSessions: [] as ChargeSession[],
     };
   },
   computed: {
-    index(): number {
-      return this.currentPage * this.pageSize;
+    maxIndex(): number {
+      return Math.max(this.totalCount - PAGE_SIZE, 0);
+    },
+    // These two are used for presentation, so they operate in 1..N range 
+    // with exception of totalCount being zero (then we want to display "0-0 / 0")
+    indexFrom(): number {
+      if (this.totalCount == 0) {
+        return 0;
+      }
+
+      return this.index + 1;
+    },
+    indexTo(): number {
+      if (this.index + PAGE_SIZE > this.totalCount) {
+        return this.totalCount;
+      } else {
+        return this.index + PAGE_SIZE;
+      }
     }
   },
   methods: {
     fetchChargeSessions() {
       if (this.store.getters.vehicleId && this.store.getters.userSessionId) {
-        ApiService.getChargeSessions(this.store.getters.vehicleId, this.index, this.pageSize)
+        ApiService.getChargeSessions(this.store.getters.vehicleId, this.index, PAGE_SIZE)
           .then((response: AxiosResponse) => {
             this.chargeSessions = response.data;
-            this.maxPage = Math.floor(Number(response.headers["x-count"]) / this.pageSize);
+            this.totalCount = Number(response.headers["x-count"]);
           });
       }
     },
     handlePaginationPrevious() {
-      if (this.currentPage > 0) {
-        this.currentPage -= 1;
+      if (this.index > 0) {
+        this.index -= PAGE_SIZE;
         this.fetchChargeSessions();
       }
     },
     handlePaginationNext() {
-      if (this.currentPage < this.maxPage) {
-        this.currentPage += 1;
+      if (this.index < this.maxIndex) {
+        this.index += PAGE_SIZE;
         this.fetchChargeSessions();
       }
+    },
+    resetPagination() {
+      this.index = 0;
     }
   },
   created() {
     this.store.subscribe((mutation, state) => {
       if (mutation.type === "saveVehicle") {
+          this.resetPagination();
           this.fetchChargeSessions();
       }
     });
