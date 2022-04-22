@@ -13,7 +13,7 @@
           <tr v-for="chargeSession in chargeSessions" :key="chargeSession.id">
             <td>{{ formatDt(chargeSession.startTime) }}</td>
             <td>{{ formatDt(chargeSession.stopTime) }}</td>
-            <td>{{ chargeSession.startSoc }}% <span class="icon is-small"><font-awesome-icon :icon="['fas', 'arrow-right']" /></span> {{ chargeSession.stopSoc }}%</td>
+            <td>{{ chargeSession.startSoc }}% &#10132; {{ chargeSession.stopSoc }}%</td>
           </tr>                                       
         </tbody>
       </table>
