@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import "bulma";
 import "bulma-slider";
-import Toast from "vue-toastification";
+import Toast, { POSITION } from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import { store, key } from "@/stores/store";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -47,6 +47,6 @@ const app = createApp(App);
 app
   .use(router)
   .use(store, key)
-  .use(Toast, { maxToasts: 1, filterBeforeCreate })
+  .use(Toast, { maxToasts: 1, position: POSITION.BOTTOM_RIGHT, filterBeforeCreate })
   .component("font-awesome-icon", FontAwesomeIcon)
   .mount("#app");
