@@ -1,6 +1,11 @@
 <template>
 <article class="panel">
-  <p class="panel-heading">Status</p>
+  <div class="panel-heading">
+    <div class="columns is-mobile">
+          <p class="column">Status</p>
+          <p class="column has-text-right is-size-7 has-text-weight-light pt-4">{{ formatDt(vsStore.vehicleStatus.vehicle.lastUpdateTime) }}</p>
+    </div>
+  </div>
   <div class="panel-block">
     <div class="columns has-text-centered is-mobile pt-2 pb-2" style="width: 100%;">
       <div class="column">
@@ -30,12 +35,13 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import vsStore from "@/stores/vehicle-status";
+import { formatDt } from "@/main";
 
 export default defineComponent({
   name: "vehicle-status-comp",
   data() {
     return {
-      vsStore
+      vsStore, formatDt
     };
   },
   computed: {
