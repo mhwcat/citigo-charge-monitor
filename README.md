@@ -2,7 +2,7 @@
 [![Docker build](https://github.com/mhwcat/citigo-charge-monitor/workflows/Docker%20build/badge.svg)](https://github.com/mhwcat/3dhw/actions)
 
 Tool for monitoring [Skoda Citigo e-iV](https://ev-database.org/car/1190/Skoda-CITIGOe-iV) charging. Main feature is ability to set target state of charge which is absent from official app for some reason. Made possible by excellent [Skodaconnect](https://github.com/lendy007/skodaconnect) Python library which does most of heavy lifting here.
-![citigo-screenshot](https://user-images.githubusercontent.com/829477/164018827-1eeb6b3e-f506-4d3b-a30e-ff986ba18599.png)
+![citigo-new-screenshot](https://user-images.githubusercontent.com/829477/176403122-4edb94b9-a4b7-433b-b834-8a3df12fd010.png)
 ## Services
 |Name|Purpose|Stack|
 |---|---|---|
