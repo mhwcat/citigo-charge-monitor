@@ -46,7 +46,7 @@ async fn main() -> std::io::Result<()> {
     info!("Base addr: {}", config.api_base_addr);
 
     let db_connection_pool = MySqlPoolOptions::new()
-        .after_connect(|conn| {
+        .after_connect(|conn, _meta| {
             Box::pin(async move {
                 // Force local timezone on DB connection, because sqlx sets it explicitly to +00:00 for each connection
                 // https://github.com/launchbadge/sqlx/issues/329
