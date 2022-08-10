@@ -76,6 +76,5 @@ Output files will be saved to `dist/` directory. You can also run development se
 npm run serve
 ```
 ## TODO
-* Use [actix-web-httpauth](https://crates.io/crates/actix-web-httpauth) in API server once compatibility issues with actix-cors are resolved (see [src/services/auth.rs](citigo-charge-monitor-api-server/src/services/auth.rs))
 * Document endpoints in API server using [paperclip-rs](https://github.com/paperclip-rs/paperclip)
 * Add tests to API server

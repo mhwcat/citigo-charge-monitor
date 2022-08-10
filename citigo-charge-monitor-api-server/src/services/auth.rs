@@ -1,25 +1,36 @@
-use crate::{
-    error::{ApiError, ApiResult},
-    services, RedisPool,
-};
-use actix_web::http::header::HeaderValue;
+use crate::RedisPool;
 use actix_web::http::header::ToStrError;
+use actix_web::{
+    dev::ServiceRequest,
+    error::{Error, ErrorInternalServerError},
+    http::header::HeaderValue,
+    web,
+};
+use actix_web_httpauth::{
+    extractors::{bearer::BearerAuth, AuthenticationError},
+    headers::www_authenticate::bearer::Bearer,
+};
 
-// Currently actix-web-httpauth does not work correctly with actix-cors (see https://github.com/actix/actix-extras/issues/127),
-// so we implement barebones auth check and execute it manually in all protected endpoints.
-// TODO: Use actix-web-httpauth middleware, once this is fixed (e.g. https://github.com/actix/actix-extras/pull/194 is merged)
+use super::user;
 
-pub async fn validate_auth(redis_pool: &RedisPool, token: Option<&HeaderValue>) -> ApiResult<()> {
-    if let Some(token) = token {
-        let token = extract_token_value_from_header(token)?;
-        let session_present = services::user::is_user_session_present(redis_pool, &token).await?;
+pub async fn validate_auth(
+    req: ServiceRequest,
+    credentials: BearerAuth,
+) -> Result<ServiceRequest, (Error, ServiceRequest)> {
+    let redis_pool = req
+        .app_data::<web::Data<RedisPool>>()
+        .expect("Redis pool missing");
+    let session_present = user::is_user_session_present(redis_pool, credentials.token()).await;
 
-        match session_present {
-            true => Ok(()),
-            false => Err(ApiError::unauthorized()),
+    match session_present {
+        Ok(present) => {
+            if present {
+                Ok(req)
+            } else {
+                Err((AuthenticationError::new(Bearer::default()).into(), req))
+            }
         }
-    } else {
-        Err(ApiError::unauthorized())
+        Err(e) => Err((ErrorInternalServerError(e), req)),
     }
 }
 

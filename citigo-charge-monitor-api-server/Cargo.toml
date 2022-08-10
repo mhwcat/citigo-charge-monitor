@@ -1,6 +1,6 @@
 [package]
 name = "citigo-charge-monitor-api-server"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 [lib]
@@ -9,7 +9,6 @@ path = "src/lib.rs"
 [[bin]]
 path = "src/main.rs"
 name = "citigo-charge-monitor-api-server"
-version = "0.1.0"
 
 [dependencies]
 log = "0.4"
@@ -18,8 +17,7 @@ backtrace = "0.3"
 lazy_static = "1.4"
 
 actix-web = "4.1"
-# See src/services/auth.rs
-#actix-web-httpauth = "0.6"
+actix-web-httpauth = "0.8"
 actix-cors = "0.6"
 deadpool-redis = "0.10"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }

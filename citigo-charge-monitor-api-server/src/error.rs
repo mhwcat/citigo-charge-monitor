@@ -20,6 +20,7 @@ pub struct ApiError {
     details: Option<String>,
 }
 
+#[allow(dead_code)]
 impl ApiError {
     pub fn unauthorized() -> Self {
         Self {

@@ -1,22 +1,17 @@
-use actix_web::{get, post, put, web, HttpRequest, HttpResponse};
+use actix_web::{get, post, put, web, HttpResponse};
 use sqlx::MySqlPool;
 
 use crate::{
     error::ApiError,
     models::{CreateVehicle, GetVehicle, GetVehicleStatus, UpdateVehicle},
-    services, RedisPool,
+    services,
 };
 
 #[get("/vehicle")]
 async fn get_vehicle(
-    request: HttpRequest,
     query: web::Query<GetVehicle>,
     db_pool: web::Data<MySqlPool>,
-    redis_pool: web::Data<RedisPool>,
 ) -> Result<HttpResponse, ApiError> {
-    services::auth::validate_auth(redis_pool.get_ref(), request.headers().get("Authorization"))
-        .await?;
-
     let vehicle = services::vehicle::get_vehicle(db_pool.get_ref(), &query.id, &query.vin).await?;
 
     match vehicle {
@@ -26,14 +21,7 @@ async fn get_vehicle(
 }
 
 #[get("/vehicle/all")]
-async fn get_all_vehicles(
-    request: HttpRequest,
-    db_pool: web::Data<MySqlPool>,
-    redis_pool: web::Data<RedisPool>,
-) -> Result<HttpResponse, ApiError> {
-    services::auth::validate_auth(redis_pool.get_ref(), request.headers().get("Authorization"))
-        .await?;
-
+async fn get_all_vehicles(db_pool: web::Data<MySqlPool>) -> Result<HttpResponse, ApiError> {
     let vehicles = services::vehicle::get_vehicles(db_pool.get_ref()).await?;
 
     Ok(HttpResponse::Ok().json(vehicles))
@@ -41,14 +29,9 @@ async fn get_all_vehicles(
 
 #[get("/vehicle/status")]
 async fn get_vehicle_status(
-    request: HttpRequest,
     query: web::Query<GetVehicleStatus>,
     db_pool: web::Data<MySqlPool>,
-    redis_pool: web::Data<RedisPool>,
 ) -> Result<HttpResponse, ApiError> {
-    services::auth::validate_auth(redis_pool.get_ref(), request.headers().get("Authorization"))
-        .await?;
-
     let vehicle_status =
         services::vehicle::get_vehicle_status(db_pool.get_ref(), &query.id).await?;
 
@@ -60,14 +43,9 @@ async fn get_vehicle_status(
 
 #[post("/vehicle")]
 async fn create_vehicle(
-    request: HttpRequest,
     db_pool: web::Data<MySqlPool>,
-    redis_pool: web::Data<RedisPool>,
     body: web::Json<CreateVehicle>,
 ) -> Result<HttpResponse, ApiError> {
-    services::auth::validate_auth(redis_pool.get_ref(), request.headers().get("Authorization"))
-        .await?;
-
     let vehicle = services::vehicle::create_vehicle(
         db_pool.get_ref(),
         &body.vin,
@@ -85,14 +63,9 @@ async fn create_vehicle(
 
 #[put("/vehicle")]
 async fn update_vehicle(
-    request: HttpRequest,
     db_pool: web::Data<MySqlPool>,
-    redis_pool: web::Data<RedisPool>,
     body: web::Json<UpdateVehicle>,
 ) -> Result<HttpResponse, ApiError> {
-    services::auth::validate_auth(redis_pool.get_ref(), request.headers().get("Authorization"))
-        .await?;
-
     let vehicle =
         services::vehicle::update_vehicle(db_pool.get_ref(), &body.id, body.soc, body.target_soc)
             .await?;

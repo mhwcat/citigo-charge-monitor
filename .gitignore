@@ -6,3 +6,4 @@ node_modules/
 pkg/
 dist/
 .vscode/
+citigo-charge-monitor-api-server/Cargo.lock

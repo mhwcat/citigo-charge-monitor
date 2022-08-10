@@ -7,17 +7,14 @@ use actix_web::{
     web::{self},
     App, HttpServer,
 };
-//use actix_web_httpauth::middleware::HttpAuthentication;
-
+use actix_web_httpauth::middleware::HttpAuthentication;
 use log::info;
 use routes::{
-    //auth::validate_auth,
     charge_session::{create_or_update_charge_session, get_charge_sessions},
     health::health_check,
     vehicle::{create_vehicle, get_all_vehicles, get_vehicle, get_vehicle_status, update_vehicle},
 };
-
-use services::auth::RegistrationToken;
+use services::auth::{validate_auth, RegistrationToken};
 use sqlx::MySqlPool;
 use uuid::Uuid;
 
@@ -68,6 +65,7 @@ pub fn run(
                     )
                     .service(
                         web::scope("")
+                            .wrap(HttpAuthentication::bearer(validate_auth))
                             .service(get_vehicle)
                             .service(get_all_vehicles)
                             .service(get_vehicle_status)
