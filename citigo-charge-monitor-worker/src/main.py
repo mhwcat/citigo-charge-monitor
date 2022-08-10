@@ -46,7 +46,7 @@ async def main():
         if charge_status.soc >= vehicle.target_soc:
             logging.info('Vehicle current SOC %d%% exceeds target SOC %d%%, stopping charging...', charge_status.soc, vehicle.target_soc)
 
-            if await skodaservice.stop_charging(vehicle.vin):
+            if await skodaservice.stop_charging(vehicle.vin) == 'Success':
                 stop_charging = True
         charge_session = apiservice.update_charge_session(vehicle.id, charge_status.soc, stop_charging, auth_token.id)
     else:
