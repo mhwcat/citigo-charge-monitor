@@ -1,4 +1,4 @@
-pydantic==1.9.*
-pyhumps==3.5.*
-requests==2.27.*
+pydantic==1.10.*
+pyhumps==3.8.*
+requests==2.28.*
 skodaconnect==1.*
