@@ -97,10 +97,10 @@ pub async fn create_vehicle(
         )),
         None => {
             let uuid = Uuid::new_v4().to_string();
-            let tx = db_pool.begin().await?;
+            let mut tx = db_pool.begin().await?;
             sqlx::query!(r#"INSERT INTO vehicles(`id`, `vin`, `soc`, `target_soc`, `last_update_time`) VALUES (?, ?, NULL, ?, NOW())"#, 
                 uuid, vin, target_soc)
-                .execute(db_pool).await?;
+                .execute(&mut tx).await?;
             tx.commit().await?;
 
             let created_vehicle = get_vehicle_by_id(db_pool, &uuid).await?;
@@ -120,7 +120,7 @@ pub async fn update_vehicle(
 
     match vehicle {
         Some(_) => {
-            let tx = db_pool.begin().await?;
+            let mut tx = db_pool.begin().await?;
             {
                 if let Some(soc) = soc {
                     sqlx::query!(
@@ -128,7 +128,7 @@ pub async fn update_vehicle(
                         soc,
                         id
                     )
-                    .execute(db_pool)
+                    .execute(&mut tx)
                     .await?;
                 }
 
@@ -138,7 +138,7 @@ pub async fn update_vehicle(
                         target_soc,
                         id
                     )
-                    .execute(db_pool)
+                    .execute(&mut tx)
                     .await?;
                 }
             }

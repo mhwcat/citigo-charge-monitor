@@ -75,18 +75,18 @@ pub async fn create_or_update_charge_session(
 
     // We want to update existing session
     let charge_session = if let Some(charge_session_in_progress) = charge_session_in_progress {
-        let tx = connection.begin().await?;
+        let mut tx = connection.begin().await?;
         {
             // Stop existing charge session
             if stop {
                 sqlx::query!(r#"UPDATE charge_sessions SET current_soc = ?, stop_time = NOW(), stop_soc = ?, last_update_time = NOW() WHERE id = ?"#, 
                     soc, soc, charge_session_in_progress.id)
-                        .execute(connection).await?;
+                        .execute(&mut tx).await?;
             // Update SOC in existing charge session
             } else {
                 sqlx::query!(r#"UPDATE charge_sessions SET current_soc = ?, last_update_time = NOW() WHERE id = ?"#, 
                     soc, charge_session_in_progress.id)
-                        .execute(connection).await?;
+                        .execute(&mut tx).await?;
             }
 
             sqlx::query!(
@@ -94,7 +94,7 @@ pub async fn create_or_update_charge_session(
                 soc,
                 vehicle_id
             )
-            .execute(connection)
+            .execute(&mut tx)
             .await?;
         }
         tx.commit().await?;
@@ -112,18 +112,18 @@ pub async fn create_or_update_charge_session(
     // We want to create new Charge session
     } else {
         let uuid = Uuid::new_v4().to_string();
-        let tx = connection.begin().await?;
+        let mut tx = connection.begin().await?;
         {
             sqlx::query!(r#"INSERT INTO charge_sessions(`id`, `start_time`, `start_soc`, `current_soc`, `vehicle_id`, `last_update_time`) VALUES (?, NOW(), ?, ?, ?, NOW())"#, 
                 uuid, soc, soc, vehicle_id)
-                .execute(connection).await?;
+                .execute(&mut tx).await?;
 
             sqlx::query!(
                 r#"UPDATE vehicles SET soc = ?, last_update_time = NOW() WHERE id = ?"#,
                 soc,
                 vehicle_id
             )
-            .execute(connection)
+            .execute(&mut tx)
             .await?;
         }
         tx.commit().await?;

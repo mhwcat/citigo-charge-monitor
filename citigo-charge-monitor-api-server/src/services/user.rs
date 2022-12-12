@@ -32,9 +32,11 @@ pub async fn create_user(
     let username = username.trim();
     let hashed = hash_str(password);
 
+    let mut tx = db_pool.begin().await?;
     sqlx::query!(r#"INSERT INTO users(`id`, `username`, `password_hash`, `creation_time`) VALUES (?, ?, ?, NOW())"#, uuid, username, hashed)
-        .execute(db_pool)
+        .execute(&mut tx)
         .await?;
+    tx.commit().await?;
 
     let created_user = get_user_by_username(db_pool, username)
         .await?
